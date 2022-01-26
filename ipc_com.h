@@ -18,8 +18,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef STM32DRIVER_H_
-#define STM32DRIVER_H_
+#ifndef IPC_COM_H
+#define IPC_COM_H
 
 #ifdef __cplusplus
 extern "C" {

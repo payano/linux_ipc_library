@@ -1,16 +1,19 @@
-# linux_ipc_library
-IPC library for linux
+#include "../ipc_com.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+#include <stdlib.h>
 
-## Example program
-Example program is in the example directory, build the shared object first and then jump into the example program and build it.
+struct ipc_data *data;
 
-Run the server example by: LD_LIBRARY_PATH="../" ./ipc_com_example #server
+void intHandler(int s) {
+	printf("Caught signal %d\n",s);
+	ipc_com_stop(data);
+	ipc_com_destroy(data);
+	exit(1);
+}
 
-Run the client example by: LD_LIBRARY_PATH="../" ./ipc_com_example 1
-
-## How to try it out
-
-```
 static void cb_method(void *payload, int sz)
 {
 	printf("CALLBACK FUNCTION\n");
@@ -18,13 +21,14 @@ static void cb_method(void *payload, int sz)
 
 int main(int argc, char * argv[])
 {
-	struct ipc_data *data;
+	signal (SIGINT, intHandler);
+
 	int ret;
 	enum NODE_TYPE nt = NODE_TYPE_SERVER;
 	if(argc == 2)
 		nt = NODE_TYPE_CLIENT;
 
-	ret = ipc_com_init(&data, &cb_method, "server_name", nt, 10, 2);
+	ret = ipc_com_init(&data, &cb_method, "server_name_test", nt, 10, 2);
 	if(ret) {
 		printf("init failed...\n");
 		return -1;
@@ -54,4 +58,3 @@ int main(int argc, char * argv[])
 
 	ipc_com_destroy(data);
 }
-```
