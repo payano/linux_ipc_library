@@ -43,6 +43,12 @@ SOFTWARE.
 #define MMAP_PROT (PROT_READ | PROT_WRITE)
 #define MMAP_FLAGS (MAP_SHARED)
 
+#ifdef DEBUG
+#define log_debug(...) printf(__VA_ARGS__)
+#else
+#define log_debug(...)
+#endif
+
 struct ipc_occupied {
 	int allocated;
 	int sz;
@@ -161,7 +167,6 @@ static void *thread_main(void *arg)
 	struct timespec ts;
 	int ret;
 	struct ipc_occupied *occupied_ptr;
-	int sz;
 
 	/* here we wait */
 	while(data->run) {
@@ -169,7 +174,7 @@ static void *thread_main(void *arg)
 			return NULL;
 		ts.tv_sec += 2;
 
-		printf("main() about to call sem_timedwait()\n");
+		log_debug("main() about to call sem_timedwait()\n");
 		while ((ret = sem_timedwait(&data->read.shm_locking->sem_empty, &ts)) == -1
 				&& errno == EINTR)
 			continue;	/* Restart if interrupted by handler */
@@ -177,7 +182,7 @@ static void *thread_main(void *arg)
 		/* Check what happened */
 		if (ret == -1) {
 			if (errno == ETIMEDOUT) {
-				printf("sem_timedwait() timed out\n");
+				log_debug("sem_timedwait() timed out\n");
 				continue;
 			} else {
 				perror("sem_timedwait");
@@ -185,18 +190,18 @@ static void *thread_main(void *arg)
 			}
 		}
 
-		printf("sem_timedwait() succeeded\n");
+		log_debug("sem_timedwait() succeeded\n");
 
 		/* do stuff */
 		pthread_mutex_lock(&data->read.shm_locking->mutex_lock);
 
-		printf("FINDING ITEM\n");
+		log_debug("FINDING ITEM\n");
 		occupied_ptr = data->read.shm_occupied;
 		uint8_t *shm_payload = data->read.shm_payload;
 		for(int i = 0; i < data->queue_cnt; ++i) {
 			if(1 == occupied_ptr->allocated) {
 				/* item */
-				printf("CALLING CALLBACK\n");
+				log_debug("CALLING CALLBACK\n");
 				data->cb(shm_payload, occupied_ptr->sz);
 				occupied_ptr->allocated = 0;
 				occupied_ptr->sz = 0;

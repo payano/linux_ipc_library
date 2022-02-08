@@ -1,5 +1,6 @@
-CFLAGS       = -fPIC -g -O2 -pedantic -Wall -Wextra -ggdb3
+CFLAGS       = -fPIC -g -O2 -pedantic -Wall -Wextra -Wpedantic #-ggdb3
 LDFLAGS      = -shared -lpthread -lrt
+#MACROS       = -D DEBUG
 
 SOURCES = $(shell echo *.c)
 HEADERS = $(shell echo *.h)
@@ -13,4 +14,4 @@ clean:
 	rm -f $(TARGET)
 
 $(TARGET) : $(OBJECTS)
-	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS) ${MACROS}
