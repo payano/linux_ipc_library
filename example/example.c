@@ -16,8 +16,13 @@ void intHandler(int s) {
 
 static void cb_method(void *payload, int sz)
 {
+	uint8_t *value = payload;
+	/* we know that this is a int... */
 	printf("CALLBACK FUNCTION\n");
+	printf("value: %d\n", *value);
 }
+
+#define PAYLOAD_SZ sizeof(uint8_t)
 
 int main(int argc, char * argv[])
 {
@@ -28,31 +33,32 @@ int main(int argc, char * argv[])
 	if(argc == 2)
 		nt = NODE_TYPE_CLIENT;
 
-	ret = ipc_com_init(&data, &cb_method, "server_name_test", nt, 10, 2);
+	ret = ipc_com_init(&data, &cb_method, "data_test", nt, PAYLOAD_SZ*100, 10);
 	if(ret) {
 		printf("init failed...\n");
 		return -1;
 	}
 
-	printf("OL\n");
+	printf("STARTING...\n");
 
 	switch(nt){
 	case NODE_TYPE_CLIENT: {
-		uint8_t payload = 0xfe;
+		uint8_t payload = 0x0;
 		int sz = sizeof(payload);
 		for(int i = 0 ; i < 100 ; ++i) {
-			printf("Sending %d\n", i);
-			ipc_com_item_send(data, &payload, sz);
+			printf("Sending %d, payload: %d\n", i, payload);
+			ipc_com_item_send(data, &payload, PAYLOAD_SZ);
+			payload++;
 		}
 	}
-		break;
+	break;
 	case NODE_TYPE_SERVER: {
 		ipc_com_start(data);
-		for(int i = 0; i < 3; ++i){
+		while(1){
 			usleep(10000000);
 		}
 	}
-		break;
+	break;
 	}
 	ipc_com_stop(data);
 

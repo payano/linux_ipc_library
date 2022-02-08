@@ -60,6 +60,13 @@ int ipc_com_stop(struct ipc_data *data);
  */
 int ipc_com_item_send(struct ipc_data *data, void *payload, int sz);
 
+/*
+ * Reserve one item, after the request is done, the queue will be locked until
+ * ipc_com_item_release is called
+ */
+//int ipc_com_item_reserve(struct ipc_data *data, void *payload, int *msgSize);
+//int ipc_com_item_release(struct ipc_data *data, int *writtenSz);
+
 #ifdef __cplusplus
 }
 #endif

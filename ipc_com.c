@@ -536,6 +536,30 @@ int ipc_com_item_send(struct ipc_data *data, void *payload, int sz)
 	return ret;
 }
 
+//int ipc_com_item_reserve(struct ipc_data *data, void *payload, int *msgSize)
+//{
+//	int ret;
+//	struct ipc_occupied *occupied_ptr;
+//	ret = sem_wait(&data->write.shm_locking->sem_full);
+//	pthread_mutex_lock(&data->write.shm_locking->mutex_lock);
+//
+//	occupied_ptr = data->write.shm_occupied;
+//	uint8_t *shm_payload = data->write.shm_payload;
+//	for(int i = 0; i < data->queue_cnt; ++i) {
+//		if(0 == occupied_ptr->allocated) {
+//			/* empty */
+//			occupied_ptr->allocated = 1;
+//			occupied_ptr->sz = sz;
+//			memcpy(shm_payload, payload, sz);
+//			break;
+//		}
+//		shm_payload += data->payload_sz;
+//	}
+//	pthread_mutex_unlock(&data->write.shm_locking->mutex_lock);
+//	ret = sem_post(&data->write.shm_locking->sem_empty);
+//	return ret;
+//}
+
 // This is just for testing
 /*
 static void cb_method(void *payload, int sz)
